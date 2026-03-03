@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная - Медицинский диагностический центр{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded-lg">
+    <h1 class="display-4">Добро пожаловать!</h1>
+    <p class="lead">Медицинский диагностический центр предлагает широкий спектр услуг.</p>
+    <hr class="my-4">
+    <p>Современное оборудование и опытные врачи ждут вас.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'services:service_list' %}" role="button">Наши услуги</a>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Современное оборудование</h5>
+                <p class="card-text">Мы используем только новейшее диагностическое оборудование.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Опытные врачи</h5>
+                <p class="card-text">В нашем центре работают врачи высшей категории.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Удобное расположение</h5>
+                <p class="card-text">Мы находимся в центре города с удобной транспортной доступностью.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
