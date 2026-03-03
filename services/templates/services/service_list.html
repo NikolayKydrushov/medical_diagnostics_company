@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Услуги - Медицинский диагностический центр{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Наши услуги</h1>
+
+<div class="row">
+    {% for service in services %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ service.name }}</h5>
+                <p class="card-text">{{ service.short_description|truncatechars:100 }}</p>
+                <p class="card-text"><strong>Цена:</strong> {{ service.price }} ₽</p>
+                <a href="{% url 'services:service_detail' service.slug %}" class="btn btn-primary">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p>Услуги временно недоступны</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
