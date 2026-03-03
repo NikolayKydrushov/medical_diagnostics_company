@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static_root/
+
+# Tests & coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+cover/
+.hypothesis/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# Distribution
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Poetry - коммитим poetry.lock, поэтому не игнорируем его
+# poetry.lock  - эта строка закомментирована (не игнорируем)
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
