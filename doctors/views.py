@@ -1,18 +1,20 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView
-from django.db.models import Q, Count
+from django.db.models import Q
+from django.views.generic import DetailView, ListView
+
 from .models import Doctor
 
 # Create your views here.
+
 
 class DoctorListView(ListView):
     """
     Представление для списка всех врачей.
     Поддерживает поиск и фильтрацию по специализации.
     """
+
     model = Doctor
-    template_name = 'doctors/doctor_list.html'
-    context_object_name = 'doctors'
+    template_name = "doctors/doctor_list.html"
+    context_object_name = "doctors"
     paginate_by = 6
 
     def get_queryset(self):
@@ -20,21 +22,23 @@ class DoctorListView(ListView):
         Фильтруем врачей: только активные, с сортировкой.
         Добавляем поиск по имени и специализации.
         """
-        queryset = Doctor.objects.filter(
-            is_active=True
-        ).select_related().order_by('order', 'name')
+        queryset = (
+            Doctor.objects.filter(is_active=True)
+            .select_related()
+            .order_by("order", "name")
+        )
 
         # Поиск по GET-параметру 'q'
-        query = self.request.GET.get('q')
+        query = self.request.GET.get("q")
         if query:
             queryset = queryset.filter(
-                Q(name__icontains=query) |
-                Q(specialty__icontains=query) |
-                Q(bio__icontains=query)
+                Q(name__icontains=query)
+                | Q(specialty__icontains=query)
+                | Q(bio__icontains=query)
             )
 
         # Фильтр по специализации
-        specialty = self.request.GET.get('specialty')
+        specialty = self.request.GET.get("specialty")
         if specialty:
             queryset = queryset.filter(specialty__icontains=specialty)
 
@@ -44,13 +48,15 @@ class DoctorListView(ListView):
         context = super().get_context_data(**kwargs)
 
         # Получаем уникальные специализации для фильтра
-        specialties = Doctor.objects.filter(
-            is_active=True
-        ).values_list('specialty', flat=True).distinct()
+        specialties = (
+            Doctor.objects.filter(is_active=True)
+            .values_list("specialty", flat=True)
+            .distinct()
+        )
 
-        context['specialties'] = sorted(set(specialties))
-        context['search_query'] = self.request.GET.get('q', '')
-        context['current_specialty'] = self.request.GET.get('specialty', '')
+        context["specialties"] = sorted(set(specialties))
+        context["search_query"] = self.request.GET.get("q", "")
+        context["current_specialty"] = self.request.GET.get("specialty", "")
 
         return context
 
@@ -59,10 +65,11 @@ class DoctorDetailView(DetailView):
     """
     Представление для детальной страницы врача.
     """
+
     model = Doctor
-    template_name = 'doctors/doctor_detail.html'
-    context_object_name = 'doctor'
-    slug_url_kwarg = 'slug'
+    template_name = "doctors/doctor_detail.html"
+    context_object_name = "doctor"
+    slug_url_kwarg = "slug"
 
     def get_queryset(self):
         """Показываем только активных врачей."""
@@ -72,9 +79,9 @@ class DoctorDetailView(DetailView):
         context = super().get_context_data(**kwargs)
 
         # Услуги, которые оказывает врач
-        context['services'] = self.object.services.filter(is_active=True)
+        context["services"] = self.object.services.filter(is_active=True)
 
         # Записи к этому врачу (только для админа, но пока заглушка)
-        context['appointments_count'] = self.object.appointments.count()
+        context["appointments_count"] = self.object.appointments.count()
 
         return context

@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
-from dotenv import load_dotenv
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
@@ -29,7 +30,11 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv("DEBUG") == "True" else False
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",") if os.getenv("DJANGO_ALLOWED_HOSTS") else []
+ALLOWED_HOSTS = (
+    os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
+    if os.getenv("DJANGO_ALLOWED_HOSTS")
+    else []
+)
 
 
 # Application definition
@@ -41,14 +46,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # Приложения проекта
-    'users',
-    'appointments',
-    'contacts',
-    'doctors',
-    'pages',
-    'services',
+    "users",
+    "appointments",
+    "contacts",
+    "doctors",
+    "pages",
+    "services",
 ]
 
 MIDDLEWARE = [
@@ -66,7 +70,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates'],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -137,37 +141,37 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / 'static']  # Папка для статических файлов в разработке
-STATIC_ROOT = BASE_DIR / 'staticfiles'    # Папка для сбора статики в продакшне
+STATICFILES_DIRS = [BASE_DIR / "static"]  # Папка для статических файлов в разработке
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Папка для сбора статики в продакшне
 
 
 # Media files (загружаемые пользователями)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Custom user model
-AUTH_USER_MODEL = 'users.User'  # Указываем кастомную модель пользователя
+AUTH_USER_MODEL = "users.User"  # Указываем кастомную модель пользователя
 
 
 # Authentication settings
-LOGIN_URL = 'users:login'   # Куда перенаправлять для входа
-LOGIN_REDIRECT_URL = 'appointments:dashboard'   # Куда после входа
-LOGOUT_REDIRECT_URL = 'pages:home'  # Куда после выхода
+LOGIN_URL = "users:login"  # Куда перенаправлять для входа
+LOGIN_REDIRECT_URL = "appointments:dashboard"  # Куда после входа
+LOGOUT_REDIRECT_URL = "pages:home"  # Куда после выхода
 
 
 # Настройки для тестирования
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 # Настройки для отправки email (для формы обратной связи)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
-EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-ADMIN_EMAIL = os.getenv('ADMIN_EMAIL')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")

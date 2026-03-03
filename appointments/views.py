@@ -1,50 +1,53 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
-from django.utils import timezone
-from django.db.models import Q
-from .models import Appointment, DiagnosticResult
-from services.models import Service
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, UpdateView)
+
 from doctors.models import Doctor
-from .forms import AppointmentForm, AppointmentCancelForm
+from services.models import Service
+
+from .forms import AppointmentCancelForm, AppointmentForm
+from .models import Appointment, DiagnosticResult
 
 # Create your views here.
+
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     """
     Личный кабинет пользователя.
     Доступен только авторизованным пользователям.
     """
-    template_name = 'appointments/dashboard.html'
-    login_url = 'users:login'  # Куда перенаправлять, если не авторизован
-    redirect_field_name = 'next'  # Параметр для возврата после входа
+
+    template_name = "appointments/dashboard.html"
+    login_url = "users:login"  # Куда перенаправлять, если не авторизован
+    redirect_field_name = "next"  # Параметр для возврата после входа
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
 
         # Предстоящие записи (ожидающие и подтвержденные)
-        context['upcoming_appointments'] = Appointment.objects.filter(
-            user=user,
-            status__in=['pending', 'confirmed']
-        ).select_related('service', 'doctor').order_by('date', 'time')
+        context["upcoming_appointments"] = (
+            Appointment.objects.filter(user=user, status__in=["pending", "confirmed"])
+            .select_related("service", "doctor")
+            .order_by("date", "time")
+        )
 
         # Последние 5 завершенных записей
-        context['recent_completed'] = Appointment.objects.filter(
-            user=user,
-            status='completed'
-        ).select_related('service', 'doctor').order_by('-date', '-time')[:5]
+        context["recent_completed"] = (
+            Appointment.objects.filter(user=user, status="completed")
+            .select_related("service", "doctor")
+            .order_by("-date", "-time")[:5]
+        )
 
         # Статистика
-        context['total_count'] = Appointment.objects.filter(user=user).count()
-        context['completed_count'] = Appointment.objects.filter(
-            user=user, status='completed'
+        context["total_count"] = Appointment.objects.filter(user=user).count()
+        context["completed_count"] = Appointment.objects.filter(
+            user=user, status="completed"
         ).count()
-        context['cancelled_count'] = Appointment.objects.filter(
-            user=user, status='cancelled'
+        context["cancelled_count"] = Appointment.objects.filter(
+            user=user, status="cancelled"
         ).count()
 
         return context
@@ -55,29 +58,27 @@ class AppointmentCreateView(LoginRequiredMixin, CreateView):
     Создание новой записи на прием.
     Только для авторизованных пользователей.
     """
+
     model = Appointment
     form_class = AppointmentForm
-    template_name = 'appointments/appointment_form.html'
-    success_url = reverse_lazy('appointments:dashboard')
-    login_url = 'users:login'
+    template_name = "appointments/appointment_form.html"
+    success_url = reverse_lazy("appointments:dashboard")
+    login_url = "users:login"
 
     def get_initial(self):
         """Предзаполняем форму, если передан slug услуги."""
         initial = super().get_initial()
-        service_slug = self.kwargs.get('service_slug')
+        service_slug = self.kwargs.get("service_slug")
 
         if service_slug:
             try:
                 service = Service.objects.get(slug=service_slug, is_active=True)
-                initial['service'] = service
+                initial["service"] = service
 
                 # Предлагаем врачей для этой услуги
-                doctors = Doctor.objects.filter(
-                    services=service,
-                    is_active=True
-                )
+                doctors = Doctor.objects.filter(services=service, is_active=True)
                 if doctors.exists():
-                    initial['doctor'] = doctors.first()
+                    initial["doctor"] = doctors.first()
 
             except Service.DoesNotExist:
                 pass
@@ -88,12 +89,11 @@ class AppointmentCreateView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
 
         # Если выбрана услуга, показываем доступных врачей
-        if 'service' in self.request.GET:
+        if "service" in self.request.GET:
             try:
-                service = Service.objects.get(id=self.request.GET.get('service'))
-                context['available_doctors'] = Doctor.objects.filter(
-                    services=service,
-                    is_active=True
+                service = Service.objects.get(id=self.request.GET.get("service"))
+                context["available_doctors"] = Doctor.objects.filter(
+                    services=service, is_active=True
                 )
             except (Service.DoesNotExist, ValueError):
                 pass
@@ -109,19 +109,18 @@ class AppointmentCreateView(LoginRequiredMixin, CreateView):
             doctor=form.instance.doctor,
             date=form.instance.date,
             time=form.instance.time,
-            status__in=['pending', 'confirmed']
+            status__in=["pending", "confirmed"],
         ).exists()
 
         if existing:
             messages.error(
-                self.request,
-                'Это время уже занято. Пожалуйста, выберите другое время.'
+                self.request, "Это время уже занято. Пожалуйста, выберите другое время."
             )
             return self.form_invalid(form)
 
         messages.success(
             self.request,
-            'Запись успешно создана! Ожидайте подтверждения администратора.'
+            "Запись успешно создана! Ожидайте подтверждения администратора.",
         )
 
         return super().form_valid(form)
@@ -132,22 +131,23 @@ class AppointmentHistoryView(LoginRequiredMixin, ListView):
     История записей пользователя.
     Только для авторизованных пользователей.
     """
+
     model = Appointment
-    template_name = 'appointments/appointment_history.html'
-    context_object_name = 'appointments'
+    template_name = "appointments/appointment_history.html"
+    context_object_name = "appointments"
     paginate_by = 10
-    login_url = 'users:login'
+    login_url = "users:login"
 
     def get_queryset(self):
         """Возвращает все записи текущего пользователя."""
-        queryset = Appointment.objects.filter(
-            user=self.request.user
-        ).select_related(
-            'service', 'doctor'
-        ).order_by('-date', '-time')
+        queryset = (
+            Appointment.objects.filter(user=self.request.user)
+            .select_related("service", "doctor")
+            .order_by("-date", "-time")
+        )
 
         # Фильтр по статусу
-        status = self.request.GET.get('status')
+        status = self.request.GET.get("status")
         if status:
             queryset = queryset.filter(status=status)
 
@@ -155,8 +155,8 @@ class AppointmentHistoryView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['current_status'] = self.request.GET.get('status', '')
-        context['status_choices'] = Appointment.Status.choices
+        context["current_status"] = self.request.GET.get("status", "")
+        context["status_choices"] = Appointment.Status.choices
         return context
 
 
@@ -165,25 +165,26 @@ class AppointmentDetailView(LoginRequiredMixin, DetailView):
     Детальная информация о записи.
     Проверяем, что запись принадлежит текущему пользователю.
     """
+
     model = Appointment
-    template_name = 'appointments/appointment_detail.html'
-    context_object_name = 'appointment'
-    login_url = 'users:login'
+    template_name = "appointments/appointment_detail.html"
+    context_object_name = "appointment"
+    login_url = "users:login"
 
     def get_queryset(self):
         """Только записи текущего пользователя."""
-        return Appointment.objects.filter(
-            user=self.request.user
-        ).select_related('service', 'doctor')
+        return Appointment.objects.filter(user=self.request.user).select_related(
+            "service", "doctor"
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['can_cancel'] = self.object.can_cancel
+        context["can_cancel"] = self.object.can_cancel
 
         try:
-            context['diagnostic_result'] = self.object.diagnostic_result
+            context["diagnostic_result"] = self.object.diagnostic_result
         except DiagnosticResult.DoesNotExist:
-            context['diagnostic_result'] = None
+            context["diagnostic_result"] = None
 
         return context
 
@@ -193,23 +194,23 @@ class AppointmentCancelView(LoginRequiredMixin, UpdateView):
     Отмена записи.
     Проверяем, что запись принадлежит текущему пользователю и ее можно отменить.
     """
+
     model = Appointment
     form_class = AppointmentCancelForm
-    template_name = 'appointments/appointment_cancel.html'
-    success_url = reverse_lazy('appointments:dashboard')
-    login_url = 'users:login'
+    template_name = "appointments/appointment_cancel.html"
+    success_url = reverse_lazy("appointments:dashboard")
+    login_url = "users:login"
 
     def get_queryset(self):
         """Только записи текущего пользователя, которые можно отменить."""
         return Appointment.objects.filter(
-            user=self.request.user,
-            status__in=['pending', 'confirmed']
+            user=self.request.user, status__in=["pending", "confirmed"]
         )
 
     def form_valid(self, form):
         """При отмене меняем статус."""
         form.instance.status = Appointment.Status.CANCELLED
-        messages.success(self.request, 'Запись успешно отменена.')
+        messages.success(self.request, "Запись успешно отменена.")
         return super().form_valid(form)
 
 
@@ -218,13 +219,14 @@ class ResultDetailView(LoginRequiredMixin, DetailView):
     Просмотр результатов диагностики.
     Проверяем, что результат принадлежит текущему пользователю.
     """
+
     model = DiagnosticResult
-    template_name = 'appointments/result_detail.html'
-    context_object_name = 'result'
-    login_url = 'users:login'
+    template_name = "appointments/result_detail.html"
+    context_object_name = "result"
+    login_url = "users:login"
 
     def get_queryset(self):
         """Только результаты текущего пользователя."""
         return DiagnosticResult.objects.filter(
             appointment__user=self.request.user
-        ).select_related('appointment', 'appointment__service')
+        ).select_related("appointment", "appointment__service")
