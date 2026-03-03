@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ doctor.name }} - Врачи Медицинского диагностического центра{% endblock %}
+
+{% block content %}
+<!-- Хлебные крошки -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'doctors:doctor_list' %}">Врачи</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ doctor.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <!-- Информация о враче -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            {% if doctor.photo %}
+            <img src="{{ doctor.photo.url }}" class="card-img-top" alt="{{ doctor.name }}" 
+                 style="max-height: 300px; object-fit: cover;">
+            {% else %}
+            <div class="bg-light text-center py-5">
+                <i class="bi bi-person-circle text-secondary" style="font-size: 8rem;"></i>
+            </div>
+            {% endif %}
+            <div class="card-body text-center">
+                <h3 class="card-title">{{ doctor.name }}</h3>
+                <p class="card-text text-primary fs-5">{{ doctor.specialty }}</p>
+                
+                <div class="d-flex justify-content-center mb-3">
+                    <span class="badge bg-info fs-6 p-2 me-2">
+                        <i class="bi bi-briefcase"></i> Стаж: {{ doctor.experience_years }} лет
+                    </span>
+                </div>
+                
+                {% if doctor.email %}
+                <p><i class="bi bi-envelope"></i> {{ doctor.email }}</p>
+                {% endif %}
+                
+                {% if doctor.phone %}
+                <p><i class="bi bi-telephone"></i> {{ doctor.phone }}</p>
+                {% endif %}
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{% url 'appointments:appointment_create' %}?doctor={{ doctor.id }}" 
+                       class="btn btn-primary btn-lg">
+                        <i class="bi bi-calendar-plus"></i> Записаться на прием
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <!-- Биография -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-person-vcard"></i> Биография</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ doctor.bio|linebreaks }}</p>
+            </div>
+        </div>
+        
+        <!-- Услуги врача -->
+        {% if services %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-list-check"></i> Услуги врача</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for service in services %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ service.name }}</h5>
+                                <p class="card-text small">{{ service.short_description|truncatechars:80 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-primary fw-bold">{{ service.price }} ₽</span>
+                                    <a href="{% url 'services:service_detail' service.slug %}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        Подробнее
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Отзывы (заглушка) -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-star"></i> Отзывы пациентов</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted text-center">Здесь будут отзывы пациентов</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

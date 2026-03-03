@@ -16,8 +16,11 @@ from .forms import AppointmentForm, AppointmentCancelForm
 class DashboardView(LoginRequiredMixin, TemplateView):
     """
     Личный кабинет пользователя.
+    Доступен только авторизованным пользователям.
     """
     template_name = 'appointments/dashboard.html'
+    login_url = 'users:login'  # Куда перенаправлять, если не авторизован
+    redirect_field_name = 'next'  # Параметр для возврата после входа
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -50,11 +53,13 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 class AppointmentCreateView(LoginRequiredMixin, CreateView):
     """
     Создание новой записи на прием.
+    Только для авторизованных пользователей.
     """
     model = Appointment
     form_class = AppointmentForm
     template_name = 'appointments/appointment_form.html'
     success_url = reverse_lazy('appointments:dashboard')
+    login_url = 'users:login'
 
     def get_initial(self):
         """Предзаполняем форму, если передан slug услуги."""
@@ -125,41 +130,45 @@ class AppointmentCreateView(LoginRequiredMixin, CreateView):
 class AppointmentHistoryView(LoginRequiredMixin, ListView):
     """
     История записей пользователя.
+    Только для авторизованных пользователей.
     """
     model = Appointment
     template_name = 'appointments/appointment_history.html'
     context_object_name = 'appointments'
     paginate_by = 10
+    login_url = 'users:login'
 
     def get_queryset(self):
-        """Возвращает все записи пользователя с сортировкой."""
-        return Appointment.objects.filter(
+        """Возвращает все записи текущего пользователя."""
+        queryset = Appointment.objects.filter(
             user=self.request.user
         ).select_related(
             'service', 'doctor'
         ).order_by('-date', '-time')
 
+        # Фильтр по статусу
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # Фильтр по статусу, если передан
-        status_filter = self.request.GET.get('status')
-        if status_filter:
-            context['appointments'] = context['appointments'].filter(status=status_filter)
-            context['current_status'] = status_filter
-
+        context['current_status'] = self.request.GET.get('status', '')
         context['status_choices'] = Appointment.Status.choices
-
         return context
 
 
 class AppointmentDetailView(LoginRequiredMixin, DetailView):
     """
     Детальная информация о записи.
+    Проверяем, что запись принадлежит текущему пользователю.
     """
     model = Appointment
     template_name = 'appointments/appointment_detail.html'
     context_object_name = 'appointment'
+    login_url = 'users:login'
 
     def get_queryset(self):
         """Только записи текущего пользователя."""
@@ -169,11 +178,8 @@ class AppointmentDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # Проверяем, можно ли отменить запись
         context['can_cancel'] = self.object.can_cancel
 
-        # Получаем результаты диагностики, если есть
         try:
             context['diagnostic_result'] = self.object.diagnostic_result
         except DiagnosticResult.DoesNotExist:
@@ -185,14 +191,16 @@ class AppointmentDetailView(LoginRequiredMixin, DetailView):
 class AppointmentCancelView(LoginRequiredMixin, UpdateView):
     """
     Отмена записи.
+    Проверяем, что запись принадлежит текущему пользователю и ее можно отменить.
     """
     model = Appointment
     form_class = AppointmentCancelForm
     template_name = 'appointments/appointment_cancel.html'
     success_url = reverse_lazy('appointments:dashboard')
+    login_url = 'users:login'
 
     def get_queryset(self):
-        """Только записи, которые можно отменить."""
+        """Только записи текущего пользователя, которые можно отменить."""
         return Appointment.objects.filter(
             user=self.request.user,
             status__in=['pending', 'confirmed']
@@ -208,10 +216,12 @@ class AppointmentCancelView(LoginRequiredMixin, UpdateView):
 class ResultDetailView(LoginRequiredMixin, DetailView):
     """
     Просмотр результатов диагностики.
+    Проверяем, что результат принадлежит текущему пользователю.
     """
     model = DiagnosticResult
     template_name = 'appointments/result_detail.html'
     context_object_name = 'result'
+    login_url = 'users:login'
 
     def get_queryset(self):
         """Только результаты текущего пользователя."""

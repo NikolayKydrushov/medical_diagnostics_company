@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль - Медицинский диагностический центр{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <!-- Карточка профиля -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person-circle"></i> Мой профиль</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="{{ user.get_full_name }}" 
+                     class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                     style="width: 150px; height: 150px; font-size: 4rem;">
+                    <i class="bi bi-person"></i>
+                </div>
+                {% endif %}
+                
+                <h4>{{ user.get_full_name|default:user.username }}</h4>
+                <p class="text-muted">{{ user.email }}</p>
+                <p class="text-muted">{{ user.phone|default:"Телефон не указан" }}</p>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'users:profile_edit' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil"></i> Редактировать профиль
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Статистика -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Статистика</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Всего записей
+                        <span class="badge bg-primary rounded-pill">{{ total_appointments }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Предстоящие записи
+                        <span class="badge bg-success rounded-pill">{{ upcoming_appointments }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Дата регистрации
+                        <span class="text-muted">{{ user.date_joined|date:"d.m.Y" }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <!-- Последние записи -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Последние записи</h5>
+                <a href="{% url 'appointments:appointment_history' %}" class="btn btn-light btn-sm">
+                    Все записи <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Услуга</th>
+                                <th>Врач</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in recent_appointments %}
+                            <tr>
+                                <td>{{ appointment.date|date:"d.m.Y" }} {{ appointment.time|time:"H:i" }}</td>
+                                <td>{{ appointment.service.name }}</td>
+                                <td>{{ appointment.doctor.name|default:"Не назначен" }}</td>
+                                <td>
+                                    {% if appointment.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark">Ожидание</span>
+                                    {% elif appointment.status == 'confirmed' %}
+                                    <span class="badge bg-success">Подтвержден</span>
+                                    {% elif appointment.status == 'completed' %}
+                                    <span class="badge bg-info">Завершен</span>
+                                    {% elif appointment.status == 'cancelled' %}
+                                    <span class="badge bg-danger">Отменен</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center mb-0">У вас пока нет записей</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Быстрые действия -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-plus text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="mt-2">Записаться на прием</h5>
+                        <p>Выберите удобное время и специалиста</p>
+                        <a href="{% url 'appointments:appointment_create' %}" class="btn btn-primary">
+                            Записаться
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clock-history text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="mt-2">История записей</h5>
+                        <p>Просмотрите все ваши прошлые записи</p>
+                        <a href="{% url 'appointments:appointment_history' %}" class="btn btn-outline-primary">
+                            История
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Запись на прием - Медицинский диагностический центр{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Запись на прием</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.service.id_for_label }}" class="form-label">Услуга *</label>
+                        {{ form.service }}
+                        {% if form.service.errors %}
+                        <div class="text-danger small">
+                            {% for error in form.service.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.doctor.id_for_label }}" class="form-label">Врач *</label>
+                        {{ form.doctor }}
+                        {% if form.doctor.errors %}
+                        <div class="text-danger small">
+                            {% for error in form.doctor.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.date.id_for_label }}" class="form-label">Дата *</label>
+                            {{ form.date }}
+                            {% if form.date.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.date.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.time.id_for_label }}" class="form-label">Время *</label>
+                            {{ form.time }}
+                            {% if form.time.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.time.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.patient_comment.id_for_label }}" class="form-label">Комментарий</label>
+                        {{ form.patient_comment }}
+                        {% if form.patient_comment.errors %}
+                        <div class="text-danger small">
+                            {% for error in form.patient_comment.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Укажите дополнительные пожелания или симптомы</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="javascript:history.back()" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Назад
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Записаться
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Динамическая фильтрация врачей при выборе услуги
+document.addEventListener('DOMContentLoaded', function() {
+    const serviceSelect = document.getElementById('{{ form.service.id_for_label }}');
+    const doctorSelect = document.getElementById('{{ form.doctor.id_for_label }}');
+    
+    if (serviceSelect) {
+        serviceSelect.addEventListener('change', function() {
+            const serviceId = this.value;
+            if (serviceId) {
+                // Очищаем текущий выбор врача
+                doctorSelect.innerHTML = '<option value="">---------</option>';
+                
+                // Здесь можно добавить AJAX запрос для получения врачей по услуге
+                // Пока просто показываем сообщение
+                console.log('Выбрана услуга ID:', serviceId);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
