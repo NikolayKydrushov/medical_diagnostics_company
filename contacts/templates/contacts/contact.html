@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Контакты - Медицинский диагностический центр{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6">
+        <!-- Контактная информация -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-info-circle"></i> Контактная информация</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5><i class="bi bi-geo-alt text-primary"></i> Адрес</h5>
+                    <p class="ms-4">{{ contact_info.address|default:"г. Москва, ул. Примерная, д. 1" }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5><i class="bi bi-telephone text-primary"></i> Телефон</h5>
+                    <p class="ms-4">{{ contact_info.phone|default:"+7 (495) 123-45-67" }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5><i class="bi bi-envelope text-primary"></i> Email</h5>
+                    <p class="ms-4">{{ contact_info.email|default:"info@mediagnostic.ru" }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5><i class="bi bi-clock text-primary"></i> Режим работы</h5>
+                    <p class="ms-4">{{ contact_info.work_hours|default:"Пн-Пт: 9:00-20:00, Сб: 10:00-18:00, Вс: выходной" }}</p>
+                </div>
+                
+                {% if contact_info.vk_url or contact_info.telegram_url %}
+                <div class="mb-4">
+                    <h5><i class="bi bi-share text-primary"></i> Мы в соцсетях</h5>
+                    <div class="ms-4">
+                        {% if contact_info.vk_url %}
+                        <a href="{{ contact_info.vk_url }}" class="btn btn-outline-primary me-2" target="_blank">
+                            <i class="bi bi-vk"></i> ВКонтакте
+                        </a>
+                        {% endif %}
+                        {% if contact_info.telegram_url %}
+                        <a href="{{ contact_info.telegram_url }}" class="btn btn-outline-primary" target="_blank">
+                            <i class="bi bi-telegram"></i> Telegram
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Карта -->
+        {% if contact_info.map_url %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-map"></i> Карта проезда</h4>
+            </div>
+            <div class="card-body">
+                <div class="ratio ratio-16x9">
+                    <iframe src="{{ contact_info.map_url }}" allowfullscreen loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-lg-6">
+        <!-- Форма обратной связи -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-chat"></i> Обратная связь</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">Оставьте ваше сообщение, и мы свяжемся с вами в ближайшее время.</p>
+                
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Ваше имя *</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                        <div class="text-danger small">
+                            {% for error in form.name.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">Email *</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">Телефон</label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.phone.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.message.id_for_label }}" class="form-label">Сообщение *</label>
+                        {{ form.message }}
+                        {% if form.message.errors %}
+                        <div class="text-danger small">
+                            {% for error in form.message.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-send"></i> Отправить сообщение
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная - Медицинский диагностический центр{% endblock %}
+
+{% block content %}
+<!-- Hero секция -->
+<div class="bg-primary text-white p-5 mb-4 rounded-3">
+    <div class="container py-4">
+        <h1 class="display-5 fw-bold">Добро пожаловать в Медицинский диагностический центр!</h1>
+        <p class="col-md-8 fs-4">Современное оборудование, опытные врачи и забота о вашем здоровье.</p>
+        <a class="btn btn-light btn-lg" href="{% url 'services:service_list' %}" role="button">
+            <i class="bi bi-arrow-right-circle"></i> Наши услуги
+        </a>
+    </div>
+</div>
+
+<!-- Преимущества -->
+<div class="container mb-5">
+    <h2 class="text-center mb-4">Почему выбирают нас</h2>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-trophy text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Опытные врачи</h5>
+                    <p class="card-text">В нашем центре работают врачи высшей категории с многолетним опытом.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-gear-wide-connected text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Современное оборудование</h5>
+                    <p class="card-text">Мы используем только новейшее диагностическое оборудование.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-geo-alt text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Удобное расположение</h5>
+                    <p class="card-text">Мы находимся в центре города с удобной транспортной доступностью.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Популярные услуги -->
+{% if services %}
+<div class="container mb-5">
+    <h2 class="text-center mb-4">Популярные услуги</h2>
+    <div class="row">
+        {% for service in services %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if service.image %}
+                <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.name }}"
+                     style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ service.name }}</h5>
+                    <p class="card-text">{{ service.short_description|truncatechars:80 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 text-primary">{{ service.price }} ₽</span>
+                        <a href="{% url 'services:service_detail' service.slug %}" class="btn btn-outline-primary">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-3">
+        <a href="{% url 'services:service_list' %}" class="btn btn-primary btn-lg">
+            Все услуги <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Наши врачи -->
+{% if doctors %}
+<div class="container mb-5">
+    <h2 class="text-center mb-4">Наши специалисты</h2>
+    <div class="row">
+        {% for doctor in doctors %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center shadow-sm">
+                {% if doctor.photo %}
+                <img src="{{ doctor.photo.url }}" class="card-img-top rounded-circle mx-auto mt-3"
+                     alt="{{ doctor.name }}" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light rounded-circle mx-auto mt-3 d-flex align-items-center justify-content-center"
+                     style="width: 150px; height: 150px;">
+                    <i class="bi bi-person-circle text-secondary" style="font-size: 5rem;"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ doctor.name }}</h5>
+                    <p class="card-text text-primary">{{ doctor.specialty }}</p>
+                    <a href="{% url 'doctors:doctor_detail' doctor.slug %}" class="btn btn-outline-primary btn-sm">
+                        Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-3">
+        <a href="{% url 'doctors:doctor_list' %}" class="btn btn-primary btn-lg">
+            Все врачи <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- О компании -->
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2>О нашем центре</h2>
+                <p class="lead">Мы работаем для вашего здоровья с 2010 года</p>
+                <p>Медицинский диагностический центр оснащен современным оборудованием экспертного класса.
+                У нас работают врачи высшей категории, кандидаты и доктора медицинских наук.</p>
+                <a href="{% url 'pages:about' %}" class="btn btn-outline-primary btn-lg">
+                    Подробнее о нас <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="bi bi-heart-pulse text-primary" style="font-size: 10rem;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

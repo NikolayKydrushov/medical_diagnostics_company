@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Личный кабинет - Медицинский диагностический центр{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Личный кабинет</h1>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <!-- Боковое меню -->
+        <div class="list-group">
+            <a href="{% url 'appointments:dashboard' %}" class="list-group-item list-group-item-action active">
+                <i class="bi bi-speedometer2"></i> Дашборд
+            </a>
+            <a href="{% url 'appointments:appointment_create' %}" class="list-group-item list-group-item-action">
+                <i class="bi bi-calendar-plus"></i> Записаться на прием
+            </a>
+            <a href="{% url 'appointments:appointment_history' %}" class="list-group-item list-group-item-action">
+                <i class="bi bi-clock-history"></i> История записей
+            </a>
+            <a href="{% url 'users:profile' %}" class="list-group-item list-group-item-action">
+                <i class="bi bi-person"></i> Мой профиль
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-md-9">
+        <!-- Статистика -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Всего записей</h5>
+                        <p class="display-4">{{ total_count }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Завершено</h5>
+                        <p class="display-4">{{ completed_count }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <h5 class="card-title">Предстоящие</h5>
+                        <p class="display-4">{{ upcoming_appointments|length }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Предстоящие записи -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Предстоящие записи</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Дата и время</th>
+                                <th>Услуга</th>
+                                <th>Врач</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in upcoming_appointments %}
+                            <tr>
+                                <td>{{ appointment.date|date:"d.m.Y" }} {{ appointment.time|time:"H:i" }}</td>
+                                <td>{{ appointment.service.name }}</td>
+                                <td>{{ appointment.doctor.name|default:"Не назначен" }}</td>
+                                <td>
+                                    {% if appointment.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark">Ожидает подтверждения</span>
+                                    {% elif appointment.status == 'confirmed' %}
+                                    <span class="badge bg-success">Подтвержден</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'appointments:appointment_detail' appointment.id %}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if appointment.can_cancel %}
+                                    <a href="{% url 'appointments:appointment_cancel' appointment.id %}" 
+                                       class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center mb-0">У вас нет предстоящих записей</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Последние завершенные записи -->
+        {% if recent_completed %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Последние завершенные записи</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Услуга</th>
+                                <th>Врач</th>
+                                <th>Результаты</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in recent_completed %}
+                            <tr>
+                                <td>{{ appointment.date|date:"d.m.Y" }}</td>
+                                <td>{{ appointment.service.name }}</td>
+                                <td>{{ appointment.doctor.name }}</td>
+                                <td>
+                                    {% if appointment.diagnostic_result %}
+                                    <a href="{% url 'appointments:result_detail' appointment.diagnostic_result.id %}" 
+                                       class="btn btn-sm btn-success">
+                                        <i class="bi bi-file-text"></i> Результаты
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted">Ожидаются</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
