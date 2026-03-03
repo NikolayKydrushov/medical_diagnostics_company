@@ -21,21 +21,30 @@ class HomePageView(TemplateView):
         # Получаем контент главной страницы (если есть)
         try:
             context['home_content'] = HomePageContent.objects.first()
-        except HomePageContent.DoesNotExist:
+        except (HomePageContent.DoesNotExist, AttributeError):
             context['home_content'] = None
 
         # Последние 6 активных услуг для отображения на главной
-        context['services'] = Service.objects.filter(
-            is_active=True
-        ).order_by('order', 'name')[:6]
+        try:
+            context['services'] = Service.objects.filter(
+                is_active=True
+            ).order_by('order', 'name')[:6]
+        except Exception:
+            context['services'] = []
 
         # Несколько врачей для отображения
-        context['doctors'] = Doctor.objects.filter(
-            is_active=True
-        ).order_by('order', 'name')[:3]
+        try:
+            context['doctors'] = Doctor.objects.filter(
+                is_active=True
+            ).order_by('order', 'name')[:3]
+        except Exception:
+            context['doctors'] = []
 
         # Контактная информация для подвала
-        context['contact_info'] = ContactInfo.objects.first()
+        try:
+            context['contact_info'] = ContactInfo.objects.first()
+        except Exception:
+            context['contact_info'] = None
 
         return context
 
@@ -56,8 +65,11 @@ class AboutPageView(TemplateView):
             context['about_content'] = None
 
         # Все активные врачи для отображения
-        context['doctors'] = Doctor.objects.filter(
-            is_active=True
-        ).order_by('order', 'name')
+        try:
+            context['doctors'] = Doctor.objects.filter(
+                is_active=True
+            ).order_by('order', 'name')
+        except Exception:
+            context['doctors'] = []
 
         return context

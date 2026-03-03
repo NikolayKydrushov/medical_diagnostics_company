@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Спасибо за обращение{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card text-center">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Спасибо за обращение!</h3>
+            </div>
+            <div class="card-body py-5">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                <h4 class="mt-4">Ваше сообщение отправлено</h4>
+                <p class="text-muted">Мы свяжемся с вами в ближайшее время.</p>
+                <div class="mt-4">
+                    <a href="{% url 'pages:home' %}" class="btn btn-primary">
+                        <i class="bi bi-house"></i> На главную
+                    </a>
+                    <a href="{% url 'services:service_list' %}" class="btn btn-outline-primary">
+                        Наши услуги
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

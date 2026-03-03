@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Результаты диагностики - Медицинский диагностический центр{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Результаты диагностики</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Информация о записи</h5>
+                    <p><strong>Услуга:</strong> {{ result.appointment.service.name }}</p>
+                    <p><strong>Врач:</strong> {{ result.appointment.doctor.name }}</p>
+                    <p><strong>Дата приема:</strong> {{ result.appointment.date|date:"d.m.Y" }}</p>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-4">
+                    <h5>Результаты</h5>
+                    <p><strong>Дата загрузки:</strong> {{ result.uploaded_at|date:"d.m.Y H:i" }}</p>
+                    
+                    <div class="d-grid gap-2 col-md-6 mx-auto mt-3">
+                        <a href="{{ result.result_file.url }}" class="btn btn-success btn-lg" target="_blank">
+                            <i class="bi bi-download"></i> Скачать файл с результатами
+                        </a>
+                    </div>
+                </div>
+                
+                {% if result.doctor_comment %}
+                <hr>
+                <div class="mb-4">
+                    <h5>Заключение врача</h5>
+                    <div class="alert alert-info">
+                        {{ result.doctor_comment|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="d-flex justify-content-center mt-4">
+                    <a href="{% url 'appointments:appointment_detail' result.appointment.id %}" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i> Вернуться к записи
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

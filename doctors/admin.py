@@ -58,9 +58,8 @@ class DoctorAdmin(admin.ModelAdmin):
                 '<img src="{}" style="max-height: 50px; max-width: 50px; border-radius: 50%;" />',
                 obj.photo.url
             )
-        return format_html('<span style="color: gray;">Нет фото</span>')
-
-    preview_photo.short_description = _('Фото')
+        return "Нет фото"  # Просто строка, без format_html
+        preview_photo.short_description = _('Фото')
 
     def get_services_count(self, obj):
         """Количество услуг врача."""

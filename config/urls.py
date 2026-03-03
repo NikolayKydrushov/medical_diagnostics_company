@@ -19,16 +19,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.shortcuts import redirect
-
-# Перенаправление с корня на главную страницу
-def root_redirect(request):
-    return redirect('pages:home')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('', root_redirect, name='root'),
-    path('', include('pages.urls')),  # Пустые URL для главной и about
+    path('', include('pages.urls')),
     path('services/', include('services.urls')),
     path('doctors/', include('doctors.urls')),
     path('contacts/', include('contacts.urls')),

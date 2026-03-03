@@ -154,9 +154,9 @@ AUTH_USER_MODEL = 'users.User'  # Указываем кастомную моде
 
 
 # Authentication settings
-LOGIN_URL = 'users:login'
-LOGIN_REDIRECT_URL = 'appointments:dashboard'
-LOGOUT_REDIRECT_URL = 'pages:home'
+LOGIN_URL = 'users:login'   # Куда перенаправлять для входа
+LOGIN_REDIRECT_URL = 'appointments:dashboard'   # Куда после входа
+LOGOUT_REDIRECT_URL = 'pages:home'  # Куда после выхода
 
 
 # Настройки для тестирования

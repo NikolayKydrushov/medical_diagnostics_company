@@ -47,7 +47,6 @@ class ServiceAdmin(admin.ModelAdmin):
     def price_display(self, obj):
         """Отформатированное отображение цены."""
         return f"{obj.price:.2f} ₽"
-
     price_display.short_description = _('Цена')
     price_display.admin_order_field = 'price'
 
@@ -58,12 +57,11 @@ class ServiceAdmin(admin.ModelAdmin):
                 '<img src="{}" style="max-height: 50px; max-width: 50px;" />',
                 obj.image.url
             )
-        return format_html('<span style="color: gray;">Нет фото</span>')
+        return "Нет фото"  # Просто возвращаем строку без format_html
+        preview_image.short_description = _('Превью')
 
-    preview_image.short_description = _('Превью')
-
-    # Действия
-    actions = ['activate_services', 'deactivate_services']
+        # Действия
+        actions = ['activate_services', 'deactivate_services']
 
     def activate_services(self, request, queryset):
         """Активировать выбранные услуги."""

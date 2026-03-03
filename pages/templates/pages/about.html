@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}О компании - Медицинский диагностический центр{% endblock %}
+
+{% block content %}
+<div class="bg-light py-4 mb-5 rounded-3">
+    <div class="container">
+        <h1 class="display-4">О нашем центре</h1>
+        <p class="lead">История, миссия и ценности медицинского диагностического центра</p>
+    </div>
+</div>
+
+<!-- История компании -->
+<div class="container mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h2>Наша история</h2>
+            <p>Медицинский диагностический центр был основан в 2010 году группой энтузиастов - врачей, 
+            стремившихся создать современный диагностический центр европейского уровня.</p>
+            <p>За годы работы мы прошли путь от небольшого кабинета УЗИ до многопрофильного 
+            диагностического центра с собственным парком современного оборудования.</p>
+            <p>Сегодня мы - команда профессионалов, объединенных общей целью: сделать качественную 
+            диагностику доступной каждому пациенту.</p>
+        </div>
+        <div class="col-lg-6 text-center">
+            <i class="bi bi-building text-primary" style="font-size: 12rem;"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Миссия и ценности -->
+<div class="bg-light py-5 mb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-bullseye text-primary" style="font-size: 4rem;"></i>
+                        <h3 class="mt-3">Наша миссия</h3>
+                        <p class="card-text">Обеспечение доступности качественной медицинской диагностики 
+                        для всех слоев населения. Мы стремимся к тому, чтобы каждый пациент мог получить 
+                        точный диагноз в кратчайшие сроки.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="text-center mb-4">Наши ценности</h3>
+                        <ul class="list-unstyled">
+                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Профессионализм</strong> - постоянное повышение квалификации</li>
+                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Ответственность</strong> - за здоровье каждого пациента</li>
+                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Инновации</strong> - использование передовых технологий</li>
+                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Доступность</strong> - понятные цены и удобный график</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Оборудование -->
+<div class="container mb-5">
+    <h2 class="text-center mb-4">Наше оборудование</h2>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-motherboard text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">МРТ 3 Тесла</h5>
+                    <p class="text-muted small">Высокопольный томограф экспертного класса</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-soundwave text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">УЗИ экспертный</h5>
+                    <p class="text-muted small">Аппараты УЗИ с доплерографией</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-cpu text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">КТ 256 срезов</h5>
+                    <p class="text-muted small">Компьютерный томограф с низкой лучевой нагрузкой</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Команда -->
+<div class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Наша команда</h2>
+        <div class="row">
+            {% for doctor in doctors|slice:":3" %}
+            <div class="col-md-4 mb-3">
+                <div class="card text-center h-100">
+                    {% if doctor.photo %}
+                    <img src="{{ doctor.photo.url }}" class="card-img-top rounded-circle mx-auto mt-3" 
+                         alt="{{ doctor.name }}" style="width: 120px; height: 120px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doctor.name }}</h5>
+                        <p class="card-text text-primary">{{ doctor.specialty }}</p>
+                        <a href="{% url 'doctors:doctor_detail' doctor.slug %}" class="btn btn-outline-primary btn-sm">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">Информация о врачах временно недоступна</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-3">
+            <a href="{% url 'doctors:doctor_list' %}" class="btn btn-primary">
+                Все врачи <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

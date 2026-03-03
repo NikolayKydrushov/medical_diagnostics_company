@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ service.name }} - Услуги Медицинского диагностического центра{% endblock %}
+
+{% block content %}
+<!-- Хлебные крошки -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'services:service_list' %}">Услуги</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ service.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Информация об услуге -->
+        <div class="card shadow-sm mb-4">
+            {% if service.image %}
+            <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.name }}"
+                 style="max-height: 400px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <h1 class="card-title">{{ service.name }}</h1>
+
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary fs-5 p-2 me-2">{{ service.price }} ₽</span>
+                    <span class="badge bg-info fs-5 p-2">
+                        <i class="bi bi-clock"></i> {{ service.duration }} мин
+                    </span>
+                </div>
+
+                <h5 class="mt-4">Описание услуги</h5>
+                <p class="card-text">{{ service.full_description|linebreaks }}</p>
+
+                <div class="d-grid gap-2 col-md-6 mx-auto mt-4">
+                    <a href="{% url 'appointments:appointment_create_with_service' service.slug %}"
+                       class="btn btn-primary btn-lg">
+                        <i class="bi bi-calendar-plus"></i> Записаться на прием
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Врачи, оказывающие услугу -->
+        {% if doctors %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-people"></i> Врачи</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for doctor in doctors %}
+                    <a href="{% url 'doctors:doctor_detail' doctor.slug %}"
+                       class="list-group-item list-group-item-action d-flex align-items-center">
+                        {% if doctor.photo %}
+                        <img src="{{ doctor.photo.url }}" alt="{{ doctor.name }}"
+                             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+                        {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center"
+                             style="width: 50px; height: 50px; border-radius: 50%; margin-right: 15px;">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <strong>{{ doctor.name }}</strong><br>
+                            <small class="text-muted">{{ doctor.specialty }}</small>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Похожие услуги -->
+        {% if related_services %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-star"></i> Похожие услуги</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for related in related_services %}
+                    <a href="{% url 'services:service_detail' related.slug %}" 
+                       class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ related.name }}</strong><br>
+                                <small class="text-muted">{{ related.short_description|truncatechars:50 }}</small>
+                            </div>
+                            <span class="badge bg-primary">{{ related.price }} ₽</span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
