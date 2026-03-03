@@ -1,12 +1,12 @@
 from django.urls import path
+
 from . import views
 
-app_name = 'pages'
+app_name = "pages"
 
 urlpatterns = [
     # Главная страница
-    path('', views.HomePageView.as_view(), name='home'),
-
+    path("", views.HomePageView.as_view(), name="home"),
     # Страница "О компании"
-    path('about/', views.AboutPageView.as_view(), name='about'),
+    path("about/", views.AboutPageView.as_view(), name="about"),
 ]
