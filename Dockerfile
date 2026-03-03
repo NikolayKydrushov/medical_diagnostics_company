@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ COPY pyproject.toml poetry.lock* /app/
 
 # Установка зависимостей
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+    && poetry install --no-interaction --no-ansi --no-root
 
 # Копирование проекта
 COPY . /app/
