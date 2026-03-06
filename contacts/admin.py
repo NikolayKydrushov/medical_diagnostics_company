@@ -99,7 +99,7 @@ class FeedbackMessageAdmin(admin.ModelAdmin):
                 'text-decoration: none;">Отметить обработанным</a>',
                 url,
             )
-        return format_html('<span style="color: green;">✓ Обработано</span>')
+        return format_html('<span style="color: green;"> Обработано</span>')
 
     process_button.short_description = _("Действие")
 

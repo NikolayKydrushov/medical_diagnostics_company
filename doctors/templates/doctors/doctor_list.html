@@ -36,11 +36,12 @@
 <div class="row">
     {% for doctor in doctors %}
     <div class="col-md-4 mb-4">
-        <div class="card h-100 text-center shadow-sm hover-card">
-            {% if doctor.photo %}
+    <div class="card h-100 text-center shadow-sm hover-card">
+        {% if doctor.photo and doctor.photo.url %}
             <img src="{{ doctor.photo.url }}" class="card-img-top rounded-circle mx-auto mt-3"
-                 alt="{{ doctor.name }}" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid var(--bs-primary);">
-            {% else %}
+                 alt="{{ doctor.name }}"
+                 style="width: 150px; height: 150px; object-fit: cover; border: 3px solid var(--bs-primary);">
+        {% else %}
             <div class="bg-light rounded-circle mx-auto mt-3 d-flex align-items-center justify-content-center"
                  style="width: 150px; height: 150px; border: 3px solid var(--bs-primary);">
                 <i class="bi bi-person-circle text-secondary" style="font-size: 5rem;"></i>
